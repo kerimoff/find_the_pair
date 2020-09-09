@@ -57,10 +57,8 @@ cardsArray.forEach((objCard,index) => {
   
   //listen for the click
   objCard.card.addEventListener('click', function(e){
-    console.log('event fired');
     let cardOpen = cardsArray.filter(objCard => objCard.isOpen === true);
     let cardIsFound = cardsArray.filter(objCard => objCard.isFound === true);
-    console.log(cardOpen.length);
     // if the game just started
     if(cardOpen.length === 0){
       objCard.isOpen = true;
@@ -74,29 +72,25 @@ cardsArray.forEach((objCard,index) => {
     
     //when there is an open card
     if(cardOpen.length > 0 ){
-      // objCard.isOpen = true;
       //if second open card is same as the waiting card
       if (objCard.imgSource.localeCompare( waitingCardImgSrc)=== 0) {
         let secondImgId = document.getElementById(objCard.position)
         secondImgId.classList.toggle('display')
+        
+        //change isFound status to true;
         waitingCardObject.isFound = true;
         objCard.isFound = true;
         
+        //remove isOpen key from current objects
         delete objCard.isOpen;
         delete waitingCardObject.isOpen;
 
-        waitingCardImg = '';
-        waitingCardObject = {};
-        waitingCardImgSrc = '';
-        console.log(cardOpen.length);
-        console.log(waitingCardImg);
-        console.log(waitingCardObject);
-        console.log(waitingCardImgSrc);
+        resetWaiting();
+        
       }
       
       //if second open card different from the waiting card
       if (objCard.imgSource.localeCompare( waitingCardImgSrc) !== 0 && waitingCardImgSrc.length>0) {
-        console.log(waitingCardImg);
         let secondImgId = document.getElementById(objCard.position)
         secondImgId.classList.toggle('display');
         setTimeout(()=>{
@@ -106,22 +100,18 @@ cardsArray.forEach((objCard,index) => {
         
         objCard.isOpen = false;
         waitingCardObject.isOpen = false; 
-        console.log(cardOpen.length);
       }
-      
-    
       cardOpen.pop()
-
-      // console.log( waitingCardObject);
-      // console.log(objCard);
-      // console.log('isOpen num' + cardOpen.length);
-      console.log(cardOpen.length);
-      console.log(cardIsFound.length);
-      // console.log('isFound num '+ cardIsFound.length);
     }
   })
 });
 
 
+//FUNCTIONS
+function resetWaiting(){
+  waitingCardImg = '';
+  waitingCardObject = {};
+  waitingCardImgSrc = '';
+}
 
 
