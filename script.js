@@ -81,8 +81,9 @@ cardsArray.forEach((objCard,index) => {
         secondImgId.classList.toggle('display')
         waitingCardObject.isFound = true;
         objCard.isFound = true;
-        objCard.isOpen = false;
-        waitingCardObject.isOpen = false
+        
+        delete objCard.isOpen;
+        delete waitingCardObject.isOpen;
 
         waitingCardImg = '';
         waitingCardObject = {};
