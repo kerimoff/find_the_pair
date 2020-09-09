@@ -1,5 +1,6 @@
 //HTML ELEMENTS
 let cardDivs = document.querySelectorAll('.card');
+// let arrCardDivs = [].slice.call(cardDivs)
 
 //CREATE ARRAY OF IMGAGE PATHS
 let imgArr = new Array();
@@ -18,7 +19,6 @@ for (let i=0; i< 8;i++){
   imgArr.push("assets/visuals/p"+(i+1)+".jpg");
 }
 imgArr.shuffle();
-console.log(imgArr);
 
 
 
@@ -39,51 +39,88 @@ for (let i = 0; i < cardDivs.length; i++) {
   cardsArray.push(new Card(cardDivs[i], i, false, imgArr[i], false))
 }
 
-console.log(cardsArray);
 
-//LISTENING FOR CLICK: CHANING BLANCK CARD TO IMG
+//LISTENING FOR CLICK: CHANING BLANK CARD TO IMG
+//variables to keep information about currently open card
 let waitingCardImg = ''
+let waitingCardObject;
+let waitingCardImgSrc;
+
+//looping through array and listening for events
 cardsArray.forEach((objCard,index) => {
-  objCard.card.addEventListener('click', function(){
+  //create img tag and add img link to divs in object.card(which is an html element)
+  let imgTag = document.createElement('img')
+  imgTag.setAttribute('src', objCard.imgSource)
+  imgTag.setAttribute('id', index)
+  imgTag.classList.add('imgStyle')
+  objCard.card.appendChild(imgTag);
+  
+  //listen for the click
+  objCard.card.addEventListener('click', function(e){
+    console.log('event fired');
     let cardOpen = cardsArray.filter(objCard => objCard.isOpen === true);
     let cardIsFound = cardsArray.filter(objCard => objCard.isFound === true);
-    
-    if(cardOpen.length === 0 && cardIsFound.length === 0){
-      console.log('no open card');
+    console.log(cardOpen.length);
+    // if the game just started
+    if(cardOpen.length === 0){
       objCard.isOpen = true;
-      let imgTag = document.createElement('img')
-      imgTag.setAttribute('src', objCard.imgSource)
-      imgTag.classList.add('imgStyle')
-      objCard.card.appendChild(imgTag);
-      waitingCard = objCard.imgSource
-      console.log(waitingCard);
+      let imgId = document.getElementById(objCard.position)
+      imgId.classList.toggle('display')
+      //add informatiom of the current card to waiting variables
+      waitingCardImg = imgId;
+      waitingCardObject = objCard;
+      waitingCardImgSrc = objCard.imgSource
     }
-    if(cardOpen.length >0){
-      console.log('open card is ' + objCard.position);
-      objCard.isOpen = true;
-      let imgTag = document.createElement('img')
-      imgTag.setAttribute('src', objCard.imgSource)
-      imgTag.classList.add('imgStyle')
-      objCard.card.appendChild(imgTag);
-      
-      if (objCard.imgSource.localeCompare(waitingCardImg)=== 0) {
-        console.log('you found match')
-      }
+    
+    //when there is an open card
+    if(cardOpen.length > 0 ){
+      // objCard.isOpen = true;
+      //if second open card is same as the waiting card
+      if (objCard.imgSource.localeCompare( waitingCardImgSrc)=== 0) {
+        let secondImgId = document.getElementById(objCard.position)
+        secondImgId.classList.toggle('display')
+        waitingCardObject.isFound = true;
+        objCard.isFound = true;
+        objCard.isOpen = false;
+        waitingCardObject.isOpen = false
 
-      if (objCard.imgSource.localeCompare(waitingCardImg) !== 0) {
-        console.log('try again');
+        waitingCardImg = '';
+        waitingCardObject = {};
+        waitingCardImgSrc = '';
+        console.log(cardOpen.length);
+        console.log(waitingCardImg);
+        console.log(waitingCardObject);
+        console.log(waitingCardImgSrc);
       }
-    }
+      
+      //if second open card different from the waiting card
+      if (objCard.imgSource.localeCompare( waitingCardImgSrc) !== 0 && waitingCardImgSrc.length>0) {
+        console.log(waitingCardImg);
+        let secondImgId = document.getElementById(objCard.position)
+        secondImgId.classList.toggle('display');
+        setTimeout(()=>{
+          secondImgId.classList.toggle('display');
+          waitingCardImg.classList.toggle('display');
+        },1000)
+        
+        objCard.isOpen = false;
+        waitingCardObject.isOpen = false; 
+        console.log(cardOpen.length);
+      }
+      
     
-    // console.log(cardOpen);
-    // console.log(cardIsFound);
+      cardOpen.pop()
+
+      // console.log( waitingCardObject);
+      // console.log(objCard);
+      // console.log('isOpen num' + cardOpen.length);
+      console.log(cardOpen.length);
+      console.log(cardIsFound.length);
+      // console.log('isFound num '+ cardIsFound.length);
+    }
   })
 });
 
-function strCompare(a, b)
-{   
-    return (a<b?-1:(a>b?1:0));  
-}
 
 
 
